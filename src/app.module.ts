@@ -15,11 +15,11 @@ import { UsersModule } from "./users/users.module"
   imports: [
     SequelizeModule.forRoot({
       dialect: "postgres",
-      host: process.env.HOST || "localhost",
+      host: process.env.POSTGRES_HOST || "localhost",
       port: 5432,
-      username: process.env.USERNAME || "postgres",
-      password: process.env.PASSWORD || "admin",
-      database: process.env.DATABASE || "localdb",
+      username: process.env.POSTGRES_USERNAME || "postgres",
+      password: process.env.POSTGRES_PASSWORD || "admin",
+      database: process.env.POSTGRES_DATABASE || "localdb",
       models: [],
       autoLoadModels: true,
       dialectOptions: {
