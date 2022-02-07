@@ -7,13 +7,26 @@ import { User } from "./users.model"
 import { UsersController } from "./users.controller";
 // service
 import { UsersService } from "./users.service";
+// module
+import { JwtModule } from "@nestjs/jwt";
+
+
 
 
 @Module({
     controllers: [UsersController],
     providers: [UsersService],
     imports: [
-        SequelizeModule.forFeature([ User ])
+        SequelizeModule.forFeature([ User ]),
+        JwtModule.register({
+            secret: process.env.PRIVATE_KEY || 'SECRET',
+            signOptions: {
+              expiresIn: '24h'
+            }
+        })
+    ],
+    exports: [
+        JwtModule
     ]
 })
 
