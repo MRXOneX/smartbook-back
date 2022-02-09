@@ -1,6 +1,7 @@
 // import { ApiTags } from "@nestjs/swagger";
-import { Model, Table, Column, DataType } from "sequelize-typescript";
-
+import { Model, Table, Column, DataType, HasOne } from "sequelize-typescript";
+//
+import { Token } from "../tokens/tokens.model"
 
 
 interface UserCreationAttrs {
@@ -40,4 +41,8 @@ export class User extends Model<User, UserCreationAttrs> {
 
     @Column({type: DataType.STRING, allowNull: false})
     sex: string;
+
+
+    @HasOne(() => Token)
+    tokenId: number
 }

@@ -38,8 +38,23 @@ export class UsersService {
     }
 
 
+    // private async generateToken(user: User) {
+    //     const payload = {
+    //         firstname: user.firstname,
+    //         lastname: user.lastname,
+    //         middlename: user.middlename,
+    //         sex: user.sex,
+    //         email: user.email, 
+    //         id: user.id
+    //     }
+    //     return {
+    //         token: this.jwtService.sign(payload)
+    //     }
+    // }
     private async generateToken(user: User) {
-        const payload = {
+    
+      
+        const jwtPayload = {
             firstname: user.firstname,
             lastname: user.lastname,
             middlename: user.middlename,
@@ -47,10 +62,24 @@ export class UsersService {
             email: user.email, 
             id: user.id
         }
-        return {
-            token: this.jwtService.sign(payload)
-        }
-    }
+  
+  
+                                        
+        const [at, rt] = await Promise.all([
+          this.jwtService.signAsync(jwtPayload, {
+            secret: 'AT_SECRET',
+            expiresIn: '15m',
+          }),
+          this.jwtService.signAsync(jwtPayload, {
+            secret: 'RT_SECRET',
+            expiresIn: '7d',
+          }),
+        ]);
+
+
+        const token = at
+        return token
+      }
 
     private async validateUser(userDto: LoginUserDto) {
         const user = await this.getUserByEmail(userDto.email)
