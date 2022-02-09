@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 //
 import { InjectModel } from "@nestjs/sequelize";
 //
@@ -15,13 +15,22 @@ import { LoginUserDto } from "./dto/login-user.dto"
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectModel(User) private userRepository: typeof User,
-                                    private jwtService: JwtService) {}
+    constructor(@InjectModel(User) 
+                                private userRepository: typeof User,                                
+                                private jwtService: JwtService) {}
+
+
 
 
     async login(userDto: LoginUserDto) {
-        const user = await this.validateUser(userDto)
-        return this.generateToken(user)
+        const user = await this.getUserByEmail(userDto.email)
+        if(!user) throw new ForbiddenException('Access Denied')
+
+        const passwordEquals = await bcrypt.compare(userDto.password, user.password)
+        if(!passwordEquals) throw new ForbiddenException('Access Denied')
+
+        const tokens = await this.generateTokens(user)
+        await this.updateRtHash(user.id, tokens.refresh_token)
     }
 
 
@@ -34,25 +43,12 @@ export class UsersService {
         const hashPassword = await bcrypt.hash(userDto.password, 5)
         const user = await this.userRepository.create({...userDto, password: hashPassword})
 
-        return this.generateToken(user)
+        const tokens = this.generateTokens(user)
+        await this.updateRtHash(user.id, (await tokens).refresh_token)
     }
 
 
-    // private async generateToken(user: User) {
-    //     const payload = {
-    //         firstname: user.firstname,
-    //         lastname: user.lastname,
-    //         middlename: user.middlename,
-    //         sex: user.sex,
-    //         email: user.email, 
-    //         id: user.id
-    //     }
-    //     return {
-    //         token: this.jwtService.sign(payload)
-    //     }
-    // }
-    private async generateToken(user: User) {
-    
+    private async generateTokens(user: User) {
       
         const jwtPayload = {
             firstname: user.firstname,
@@ -77,19 +73,42 @@ export class UsersService {
         ]);
 
 
-        const token = at
-        return token
-      }
+        return {
+            access_token: at,
+            refresh_token: rt,
+        };
+    }
 
-    private async validateUser(userDto: LoginUserDto) {
-        const user = await this.getUserByEmail(userDto.email)
-        const passwordEquals = await bcrypt.compare(userDto.password, user.password)
+    async updateRtHash(userId: number, rt: string) {
+        const user = await this.userRepository.findByPk(userId)
+
+        if(user) {
+            user.$add('hashRt', rt)
+        }
+    }
+
+    async refreshTokens(userId: string, rt: string) {
+        const user = await this.userRepository.findByPk(userId)
+
+        if(!user || !user.hashRt) throw new ForbiddenException('Acees Denied')
+
+        const rtMatches = user.hashRt === rt
+        if(!rtMatches) throw new ForbiddenException('Access Denied')
+
+        const tokens = await this.generateTokens(user)
+        await this.updateRtHash(user.id, tokens.refresh_token)
+
+        return tokens
+    }
+    // private async validateUser(userDto: LoginUserDto) {
+    //     const user = await this.getUserByEmail(userDto.email)
+    //     const passwordEquals = await bcrypt.compare(userDto.password, user.password)
 
         
-        if (user && passwordEquals) return user
+    //     if (user && passwordEquals) return user
 
-        throw new UnauthorizedException({message: 'Error email or password'})
-    }
+    //     throw new UnauthorizedException({message: 'Error email or password'})
+    // }
 
     async getUserByEmail(email: string) {
         return this.userRepository.findOne({where: {email}})
