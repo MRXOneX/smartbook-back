@@ -31,6 +31,9 @@ export class UsersService {
 
         const tokens = await this.generateTokens(user)
         await this.updateRtHash(user.id, tokens.refresh_token)
+
+
+        return tokens
     }
 
 
@@ -43,8 +46,12 @@ export class UsersService {
         const hashPassword = await bcrypt.hash(userDto.password, 5)
         const user = await this.userRepository.create({...userDto, password: hashPassword})
 
+
         const tokens = this.generateTokens(user)
         await this.updateRtHash(user.id, (await tokens).refresh_token)
+
+
+        return tokens
     }
 
 
@@ -80,11 +87,7 @@ export class UsersService {
     }
 
     async updateRtHash(userId: number, rt: string) {
-        const user = await this.userRepository.findByPk(userId)
-
-        if(user) {
-            user.$add('hashRt', rt)
-        }
+        await this.userRepository.update({hashRt: rt}, {where: {id: userId}})
     }
 
     async refreshTokens(userId: string, rt: string) {

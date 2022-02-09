@@ -39,6 +39,6 @@ export class User extends Model<User, UserCreationAttrs> {
     @Column({type: DataType.STRING, allowNull: false})
     sex: string;
 
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.STRING(500), allowNull: true})
     hashRt: string
 }

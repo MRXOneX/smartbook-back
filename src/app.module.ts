@@ -22,12 +22,12 @@ import { UsersModule } from "./users/users.module"
       database: process.env.POSTGRES_DATABASE || "smartbook-test",
       models: [],
       autoLoadModels: true,
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      }
+      // dialectOptions: {
+      //   ssl: {
+      //     require: true,
+      //     rejectUnauthorized: false
+      //   }
+      // }
     }),
     UsersModule
   ],

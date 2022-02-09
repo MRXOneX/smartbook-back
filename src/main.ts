@@ -19,7 +19,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document)
 
 
-  const PORT = process.env.PORT || '8080'
+  const PORT = process.env.PORT || '80'
 
   await app.listen(PORT);
 }
