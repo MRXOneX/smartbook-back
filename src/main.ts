@@ -1,12 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 //
+import * as cookieParser from 'cookie-parser';
+//
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 // module
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
       .setTitle('Docs SmartBook')
@@ -19,7 +21,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document)
 
 
-  const PORT = process.env.PORT || '8080'
+  const PORT = process.env.PORT || '80'
 
   await app.listen(PORT);
 }

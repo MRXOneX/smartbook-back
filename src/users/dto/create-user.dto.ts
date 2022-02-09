@@ -20,8 +20,8 @@ export class CreateUserDto {
     readonly password: string;
 
     @ApiProperty({example: '21.02.2001', description: 'date of birth'})
-    readonly dataOfBirth: string;
+    readonly dateOfBirth: string;
 
-    @ApiProperty({example: 'Man or Woman', description: 'sex'})
-    readonly sex: string;
+    @ApiProperty({example: 'Man or Woman', description: 'gender'})
+    readonly gender: string;
 }

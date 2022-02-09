@@ -7,8 +7,8 @@ interface UserCreationAttrs {
     middlename: string;
     email: string;
     password: string;
-    dataOfBirth: string;
-    sex: string;
+    dateOfBirth: string;
+    gender: string;
 }
 
 
@@ -34,11 +34,11 @@ export class User extends Model<User, UserCreationAttrs> {
     password: string;
 
     @Column({type: DataType.STRING, allowNull: false})
-    dataOfBirth: string;
+    dateOfBirth: string;
 
     @Column({type: DataType.STRING, allowNull: false})
-    sex: string;
+    gender: string;
 
-    @Column({type: DataType.STRING, allowNull: true})
+    @Column({type: DataType.STRING(1000), allowNull: true})
     hashRt: string
 }
