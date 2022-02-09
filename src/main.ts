@@ -7,8 +7,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
+  app.enableCors();
 
   const config = new DocumentBuilder()
       .setTitle('Docs SmartBook')
@@ -21,7 +22,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document)
 
 
-  const PORT = process.env.PORT || '8080'
+  const PORT = process.env.PORT || '80'
 
   await app.listen(PORT);
 }
