@@ -1,5 +1,7 @@
 import { Controller, Body, Response, Request, Post, Get } from "@nestjs/common"
 // service
+import { JwtService } from "@nestjs/jwt"
+//
 import { UsersService } from "./users.service"
 // dto
 import { CreateUserDto } from "./dto/create-user.dto"
@@ -10,7 +12,7 @@ import { LoginUserDto } from "./dto/login-user.dto"
 @Controller('users')
 export class UsersController {
 
-    constructor(private usersService: UsersService) {}
+    constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
     @Post('/registration')
     async registration(@Body() userDto: CreateUserDto, @Response() res: any) {
@@ -28,6 +30,16 @@ export class UsersController {
 
         res.cookie('refreshToken', user.refresh_token, {maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true})
         return res.send({access_token: user.access_token, user: user.userData});
+    }
+
+    @Get('/logout')
+    async logout(@Request() req) {
+        const { refreshToken } = req.cookies
+
+        const user = this.jwtService.verify(refreshToken, { secret: 'RT_SECRET' })
+        console.log(user)
+
+
     }
 
 

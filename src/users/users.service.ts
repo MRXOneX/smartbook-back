@@ -74,6 +74,10 @@ export class UsersService {
         return {...tokens, userData}
     }
 
+    async logout (userId: number) {
+        await this.userRepository.update({hashRt: null}, {where: {id: userId}})
+    }
+
 
     private generateTokens(user: User) {
       
