@@ -37,7 +37,7 @@ export class UsersController {
         const { refreshToken } = req.cookies
 
         const user = this.jwtService.verify(refreshToken, { secret: 'RT_SECRET' })
-        console.log(user)
+        await this.usersService.logout(user.id)
 
 
     }
