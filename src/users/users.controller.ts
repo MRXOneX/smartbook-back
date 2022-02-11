@@ -33,13 +33,13 @@ export class UsersController {
     }
 
     @Get('/logout')
-    async logout(@Request() req) {
+    async logout(@Response() res: any, @Request() req: any) {
         const { refreshToken } = req.cookies
 
         const user = this.jwtService.verify(refreshToken, { secret: 'RT_SECRET' })
         await this.usersService.logout(user.id)
 
-
+        return res.json({HttpStatus: 200})
     }
 
 
